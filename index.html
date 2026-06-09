@@ -1,1 +1,31 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сайт-візитівка</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #0f0f12; color: #ffffff; text-align: center; padding: 40px 20px; margin: 0; }
+        .container { max-width: 400px; margin: 0 auto; }
+        .avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 2px solid #3f3f46; }
+        h1 { font-size: 24px; margin: 15px 0 5px; font-weight: 600; }
+        .subtitle { color: #a1a1aa; font-size: 14px; margin-bottom: 30px; }
+        .links-group { display: flex; flex-direction: column; gap: 12px; }
+        .link-card { background: #18181b; color: #ffffff; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 500; border: 1px solid #27272a; transition: 0.2s; }
+        .link-card:active { background: #27272a; transform: scale(0.98); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe" alt="Avatar" class="avatar">
+        <h1>Ім'я або Псевдонім</h1>
+        <div class="subtitle">Короткий опис діяльності, стек або спеціалізація</div>
+        <div class="links-group">
+            <a href="https://t.me/your_username" class="link-card">Telegram Профіль</a>
+            <a href="https://github.com/your_username" class="link-card">GitHub Репозиторії</a>
+            <a href="mailto:example@email.com" class="link-card">Зв'язатися по Email</a>
+        </div>
+    </div>
+</body>
+</html>
 
