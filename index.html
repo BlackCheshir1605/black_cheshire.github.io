@@ -1,30 +1,624 @@
+```html
 <!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сайт-візитівка</title>
+    <title>Black Cheshire — Сайт-візитівка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: system-ui, sans-serif; background: #0f0f12; color: #ffffff; text-align: center; padding: 40px 20px; margin: 0; }
-        .container { max-width: 400px; margin: 0 auto; }
-        .avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 2px solid #3f3f46; }
-        h1 { font-size: 24px; margin: 15px 0 5px; font-weight: 600; }
-        .subtitle { color: #a1a1aa; font-size: 14px; margin-bottom: 30px; }
-        .links-group { display: flex; flex-direction: column; gap: 12px; }
-        .link-card { background: #18181b; color: #ffffff; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 500; border: 1px solid #27272a; transition: 0.2s; }
-        .link-card:active { background: #27272a; transform: scale(0.98); }
+        :root {
+            --bg-color: #050508;
+            --card-bg: rgba(15, 15, 20, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-purple: #a78bfa;
+            --accent-blue: #60a5fa;
+            --accent-pink: #f43f5e;
+            --accent-red: #ef4444;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Динамічний анімований інтерактивний фон */
+        #canvas-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Основний скляний контейнер */
+        .container {
+            max-width: 430px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 35px 24px;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 
+                        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+            z-index: 1;
+            position: relative;
+            text-align: center;
+            animation: containerEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes containerEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Аватар з градієнтним обідком та пульсацією */
+        .avatar-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+        }
+
+        .avatar-glow {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink), var(--accent-blue));
+            z-index: -1;
+            opacity: 0.8;
+            filter: blur(8px);
+            animation: spinGlow 8s linear infinite;
+        }
+
+        @keyframes spinGlow {
+            100% { transform: rotate(360deg); }
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #09090b;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #18181b;
+        }
+
+        .avatar-container:hover .avatar {
+            transform: scale(1.08) rotate(-3deg);
+        }
+
+        /* Заголовки */
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #ffffff 40%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 400;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .wave-emoji {
+            display: inline-block;
+            animation: wave 2.5s infinite;
+            transform-origin: 70% 70%;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg) }
+            10% { transform: rotate(14deg) }
+            20% { transform: rotate(-8deg) }
+            30% { transform: rotate(14deg) }
+            40% { transform: rotate(-4deg) }
+            50% { transform: rotate(10deg) }
+        }
+
+        /* Список посилань */
+        .links-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        /* Стилізація скроллбару */
+        .links-group::-webkit-scrollbar {
+            width: 4px;
+        }
+        .links-group::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .links-group::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        /* Картка посилання */
+        .link-card {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+            padding: 15px 18px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14.5px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Почерговий запуск появи */
+        .link-card:nth-child(1) { animation-delay: 0.1s; }
+        .link-card:nth-child(2) { animation-delay: 0.2s; }
+        .link-card:nth-child(3) { animation-delay: 0.3s; }
+        .link-card:nth-child(4) { animation-delay: 0.4s; }
+        .link-card:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Ефект відблиску при наведенні */
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.04),
+                transparent
+            );
+            transition: 0.6s;
+        }
+
+        .link-card:hover::before {
+            left: 100%;
+        }
+
+        /* Індивідуальні неонові акценти для кожної картки */
+        .link-card[data-type="telegram"]:hover {
+            border-color: rgba(96, 165, 250, 0.4);
+            box-shadow: 0 8px 24px rgba(96, 165, 250, 0.15);
+            background: rgba(96, 165, 250, 0.06);
+        }
+
+        .link-card[data-type="instagram"]:hover {
+            border-color: rgba(244, 63, 94, 0.4);
+            box-shadow: 0 8px 24px rgba(244, 63, 94, 0.15);
+            background: rgba(244, 63, 94, 0.06);
+        }
+
+        .link-card[data-type="youtube"]:hover {
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15);
+            background: rgba(239, 68, 68, 0.06);
+        }
+
+        .link-card[data-type="github"]:hover {
+            border-color: rgba(167, 139, 250, 0.4);
+            box-shadow: 0 8px 24px rgba(167, 139, 250, 0.15);
+            background: rgba(167, 139, 250, 0.06);
+        }
+
+        .link-card[data-type="email"]:hover {
+            border-color: rgba(251, 191, 36, 0.4);
+            box-shadow: 0 8px 24px rgba(251, 191, 36, 0.15);
+            background: rgba(251, 191, 36, 0.06);
+        }
+
+        .link-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .link-card:active {
+            transform: translateY(-1px);
+        }
+
+        /* Контент всередині посилань */
+        .link-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .link-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .link-card:hover .link-icon {
+            transform: scale(1.15);
+        }
+
+        .arrow-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.3;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .link-card:hover .arrow-icon {
+            opacity: 1;
+            transform: translateX(4px);
+        }
+
+        /* Кнопка "Поділитися" */
+        .share-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 24px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .share-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Спливаюче повідомлення */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #101014;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            opacity: 0;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
+    <!-- Анімований інтерактивний фон на Canvas -->
+    <canvas id="canvas-bg"></canvas>
+
     <div class="container">
-        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe" alt="Avatar" class="avatar">
-        <h1>Black Cheshire</h1>
-        <div class="subtitle">Привіт!</div>
-        <div class="links-group">
-            <a href="https://t.me/kami_no_neko_16" class="link-card">Telegram Профіль</a>
-            <a href="https://github.com/BlackCheshir1605" class="link-card">GitHub Репозиторії</a>
-            <a href="mailto:zplitus@gmail.com" class="link-card">Зв'язатися по Email</a>
+        <div class="avatar-container">
+            <div class="avatar-glow"></div>
+            <!-- Повернений аватар кішки -->
+            <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=300&h=300" 
+                 onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe'" 
+                 alt="Black Cheshire Cat Avatar" 
+                 class="avatar">
         </div>
+        
+        <h1>Black Cheshire</h1>
+        <div class="subtitle">
+            Привіт! <span class="wave-emoji">👋</span>
+        </div>
+
+        <div class="links-group">
+            <!-- Telegram -->
+            <a href="https://t.me/kami_no_neko_16" target="_blank" rel="noopener noreferrer" class="link-card" data-type="telegram">
+                <div class="link-content">
+                    <div class="link-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-blue);">
+                            <path d="m22 2-7 20-4-9-9-4Z"/>
+                            <path d="M22 2 11 13"/>
+                        </svg>
+                    </div>
+                    <span>Telegram Профіль</span>
+                </div>
+                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+
+            <!-- Instagram -->
+            <a href="https://www.instagram.com/__black__cheshire__?igsh=MWIwYWFiYTk5cnk2Mg==" target="_blank" rel="noopener noreferrer" class="link-card" data-type="instagram">
+                <div class="link-content">
+                    <div class="link-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-pink);">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                        </svg>
+                    </div>
+                    <span>Instagram</span>
+                </div>
+                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+
+            <!-- Youtube -->
+            <a href="https://youtube.com/@blackcheshir?si=glkup2jQluQio-28" target="_blank" rel="noopener noreferrer" class="link-card" data-type="youtube">
+                <div class="link-content">
+                    <div class="link-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-red);">
+                            <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z"/>
+                            <polygon points="10 15 15 12 10 9"/>
+                        </svg>
+                    </div>
+                    <span>YouTube Канал</span>
+                </div>
+                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+
+            <!-- GitHub -->
+            <a href="https://github.com/BlackCheshir1605" target="_blank" rel="noopener noreferrer" class="link-card" data-type="github">
+                <div class="link-content">
+                    <div class="link-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-purple);">
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                            <path d="M9 18c-4.51 2-5-2-7-2"/>
+                        </svg>
+                    </div>
+                    <span>GitHub Репозиторії</span>
+                </div>
+                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+
+            <!-- Email -->
+            <a href="mailto:zplitus@gmail.com" class="link-card" data-type="email">
+                <div class="link-content">
+                    <div class="link-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #fbbf24;">
+                            <rect width="20" height="16" x="2" y="4" rx="2"/>
+                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                        </svg>
+                    </div>
+                    <span>Зв'язатися по Email</span>
+                </div>
+                <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+
+        <button class="share-btn" onclick="copyCardLink()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>
+            Поділитися профілем
+        </button>
     </div>
+
+    <div class="toast" id="copyToast">Посилання скопійовано!</div>
+
+    <script>
+        // Ініціалізація динамічного інтерактивного фону
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        const colors = ['rgba(167, 139, 250, 0.35)', 'rgba(96, 165, 250, 0.35)', 'rgba(244, 63, 94, 0.25)'];
+        let mouse = { x: null, y: null, radius: 160 };
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            createParticles();
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 1;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.density = (Math.random() * 30) + 15;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 0.3 + 0.1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0; // Скидання тіні для продуктивності
+            }
+
+            update() {
+                // Повільний рух часток по колу
+                this.angle += 0.002;
+                this.baseX += Math.cos(this.angle) * this.speed;
+                this.baseY += Math.sin(this.angle) * this.speed;
+
+                // Перевірка межі екрана
+                if (this.baseX < 0 || this.baseX > canvas.width) this.baseX = Math.random() * canvas.width;
+                if (this.baseY < 0 || this.baseY > canvas.height) this.baseY = Math.random() * canvas.height;
+
+                // Реакція на курсор/дотик
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < mouse.radius) {
+                    let forceDirectionX = dx / distance;
+                    let forceDirectionY = dy / distance;
+                    let maxDistance = mouse.radius;
+                    let force = (maxDistance - distance) / maxDistance;
+                    let directionX = forceDirectionX * force * this.density;
+                    let directionY = forceDirectionY * force * this.density;
+
+                    this.x -= directionX;
+                    this.y -= directionY;
+                } else {
+                    if (this.x !== this.baseX) {
+                        let dx = this.x - this.baseX;
+                        this.x -= dx / 15;
+                    }
+                    if (this.y !== this.baseY) {
+                        let dy = this.y - this.baseY;
+                        this.y -= dy / 15;
+                    }
+                }
+            }
+        }
+
+        function createParticles() {
+            particles = [];
+            let numberOfParticles = Math.min((canvas.width * canvas.height) / 8000, 150);
+            for (let i = 0; i < numberOfParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Ефект фонового світлового бліку в центрі
+            let gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 50, canvas.width/2, canvas.height/2, canvas.width);
+            gradient.addColorStop(0, 'rgba(10, 10, 20, 0.3)');
+            gradient.addColorStop(1, '#050508');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            initCanvas();
+        });
+
+        // Трекінг переміщення миші або дотиків на екрані
+        const handleInteraction = (e) => {
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            mouse.x = clientX;
+            mouse.y = clientY;
+        };
+
+        window.addEventListener('mousemove', handleInteraction);
+        window.addEventListener('touchmove', handleInteraction);
+
+        window.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+        window.addEventListener('touchend', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        window.onload = function() {
+            initCanvas();
+            animate();
+        };
+
+        // Функція швидкого копіювання посилання
+        function copyCardLink() {
+            const el = document.createElement('textarea');
+            el.value = window.location.href;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const toast = document.getElementById('copyToast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+    </script>
 </body>
 </html>
+
+```
